@@ -1,0 +1,5 @@
+# ignore everything inside the build directory
+build
+
+# ignore everything inside the build directory
+.vscode 
