@@ -21,7 +21,7 @@ private:
 public:
     Chunk(glm::ivec3 position);
     ~Chunk();
-    Block *GetBlock(int x, int y, int z);
+    Block &GetBlock(int x, int y, int z);
     void SetBlock(int x, int y, int z);
     void Render();
 };

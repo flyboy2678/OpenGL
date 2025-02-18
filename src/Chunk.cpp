@@ -43,3 +43,8 @@ Chunk::~Chunk()
 
     delete[] m_Blocks;
 }
+
+Block &Chunk::GetBlock(int x, int y, int z)
+{
+    return m_Blocks[x][y][z];
+}
