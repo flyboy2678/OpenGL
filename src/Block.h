@@ -1,5 +1,4 @@
 #pragma once
-#include "Mesh.h"
 
 #include <glm/glm.hpp>
 
@@ -25,6 +24,7 @@ private:
 public:
     Block();
     Block(BlockType type, glm::vec3 postion);
+    ~Block();
     BlockType getType() const;
     glm::vec3 getPosition() const;
     bool isActive() const;

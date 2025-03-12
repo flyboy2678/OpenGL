@@ -3,12 +3,9 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-#include <iostream>
-
 #include "Renderer.h"
-#include "Mesh.h"
-#include "Texture.h"
 #include "Camera.h"
+#include "Chunk.h"
 
 void processInput(GLFWwindow *);
 void mouse_callback(GLFWwindow *, double, double);
@@ -40,7 +37,7 @@ int main(void)
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
     /* Create a windowed mode window and its OpenGL context */
-    window = glfwCreateWindow(1400, 1050, "Minecraft", NULL, NULL);
+    window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "Minecraft", NULL, NULL);
     if (!window)
     {
         glfwTerminate();
@@ -64,43 +61,43 @@ int main(void)
         return -1;
     }
     {
-        std::vector<float> vertices = {
-            // Positions          // Texture Coords
-            // Back face
-            1.0f, 0.0f, 0.0f, 0.0f, 0.0f,
-            0.0f, 0.0f, 0.0f, 1.0f, 0.0f,
-            1.0f, 1.0f, 0.0f, 0.0f, 1.0f,
-            0.0f, 1.0f, 0.0f, 1.0f, 1.0f,
+        std::vector<Vertex> vertices  = {
+            //Back face
+            Vertex{glm::vec3(1.0f, 0.0f, 0.0f), glm::vec2(0.0f, 0.0f)},
+            Vertex{glm::vec3(1.0f, 0.0f, 0.0f), glm::vec2(1.0f, 0.0f)},
+            Vertex{glm::vec3(1.0f, 0.0f, 0.0f), glm::vec2(0.0f, 1.0f)},
+            Vertex{glm::vec3(1.0f, 0.0f, 0.0f), glm::vec2(1.0f, 1.0f)},
 
-            // Front face
-            0.0f, 0.0f, 1.0f, 0.0f, 0.0f,
-            1.0f, 0.0f, 1.0f, 1.0f, 0.0f,
-            0.0f, 1.0f, 1.0f, 0.0f, 1.0f,
-            1.0f, 1.0f, 1.0f, 1.0f, 1.0f,
+            //Front Face
+            Vertex{glm::vec3(0.0f, 0.0f, 1.0f), glm::vec2(0.0f, 0.0f)},
+            Vertex{glm::vec3(1.0f, 0.0f, 1.0f), glm::vec2(1.0f, 0.0f)},
+            Vertex{glm::vec3(0.0f, 1.0f, 1.0f), glm::vec2(0.0f, 1.0f)},
+            Vertex{glm::vec3(1.0f, 1.0f, 1.0f), glm::vec2(1.0f, 1.0f)},
+            
+            //Left Face
+            Vertex{glm::vec3(0.0f, 0.0f, 0.0f), glm::vec2(0.0f, 0.0f)},
+            Vertex{glm::vec3(0.0f, 0.0f, 1.0f), glm::vec2(1.0f, 0.0f)},
+            Vertex{glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2(0.0f, 1.0f)},
+            Vertex{glm::vec3(0.0f, 1.0f, 1.0f), glm::vec2(1.0f, 1.0f)},
 
-            // Left face
-            0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
-            0.0f, 0.0f, 1.0f, 1.0f, 0.0f,
-            0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
-            0.0f, 1.0f, 1.0f, 1.0f, 1.0f,
+            //Right Face
+            Vertex{glm::vec3(1.0f, 0.0f, 1.0f), glm::vec2(0.0f, 0.0f)},
+            Vertex{glm::vec3(1.0f, 0.0f, 0.0f), glm::vec2(1.0f, 0.0f)},
+            Vertex{glm::vec3(1.0f, 1.0f, 1.0f), glm::vec2(0.0f, 1.0f)},
+            Vertex{glm::vec3(1.0f, 1.0f, 0.0f), glm::vec2(1.0f, 1.0f)},
 
-            // Right face
-            1.0f, 0.0f, 1.0f, 0.0f, 0.0f,
-            1.0f, 0.0f, 0.0f, 1.0f, 0.0f,
-            1.0f, 1.0f, 1.0f, 0.0f, 1.0f,
-            1.0f, 1.0f, 0.0f, 1.0f, 1.0f,
+            //Bottom Face
+            Vertex{glm::vec3(1.0f, 0.0f, 1.0f), glm::vec2(0.0f, 0.0f)},
+            Vertex{glm::vec3(0.0f, 0.0f, 1.0f), glm::vec2(1.0f, 0.0f)},
+            Vertex{glm::vec3(1.0f, 0.0f, 0.0f), glm::vec2(0.0f, 1.0f)},
+            Vertex{glm::vec3(0.0f, 0.0f, 0.0f), glm::vec2(1.0f, 1.0f)},
 
-            // Bottom face
-            1.0f, 0.0f, 1.0f, 0.0f, 0.0f,
-            0.0f, 0.0f, 1.0f, 1.0f, 0.0f,
-            1.0f, 0.0f, 0.0f, 0.0f, 1.0f,
-            0.0f, 0.0f, 0.0f, 1.0f, 1.0f,
-
-            // Top face
-            0.0f, 1.0f, 1.0f, 0.0f, 0.0f,
-            1.0f, 1.0f, 1.0f, 1.0f, 0.0f,
-            0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
-            1.0f, 1.0f, 0.0f, 1.0f, 1.0f};
+            //Top Face
+            Vertex{glm::vec3(0.0f, 1.0f, 1.0f), glm::vec2(0.0f, 0.0f)},
+            Vertex{glm::vec3(1.0f, 1.0f, 1.0f), glm::vec2(1.0f, 0.0f)},
+            Vertex{glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2(0.0f, 1.0f)},
+            Vertex{glm::vec3(1.0f, 1.0f, 0.0f), glm::vec2(1.0f, 1.0f)},
+        };
 
         std::vector<unsigned int> indices = {
 
@@ -121,29 +118,29 @@ int main(void)
             // Bottom face
             20, 23, 21, 20, 22, 23};
 
-        // creating a model matrix
-        glm::mat4 model = glm::mat4(1.0f);
-        model = glm::rotate(model, glm::radians(-55.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 
         GlCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
         GlCall(glEnable(GL_BLEND));
         GlCall(glEnable(GL_DEPTH_TEST));
 
-        Mesh cubeMesh(vertices, indices);
-
-        cubeMesh.bind();
+        // Mesh cubeMesh(vertices, indices);
+        Chunk chunk(glm::vec3(0.0f, 0.0f, 0.0f));
+        // cubeMesh.bind();
 
         Shader basicShader;
         basicShader.use();
+        // creating a model matrix
+        glm::mat4 model = glm::mat4(1.0f);
+        model = glm::rotate(model, glm::radians(-55.0f), glm::vec3(1.0f, 0.0f, 0.0f));
         basicShader.setUniformMat4f("u_Model", model);
 
-        Texture texture("../resources/textures/wood_plank.jpg");
+        Texture texture("../resources/textures/grass_block.png");
         texture.bind();
         basicShader.setInt("u_Texture", 0);
 
         basicShader.unbind();
 
-        cubeMesh.unbind();
+        // cubeMesh.unbind();
 
         /* Loop until the user closes the window */
         while (!glfwWindowShouldClose(window))
@@ -162,15 +159,14 @@ int main(void)
             glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
             basicShader.setUniformMat4f("u_Projection", projection);
 
-            model = glm::mat4(1.0f);
-            model = glm::rotate(model, (float)glfwGetTime() * glm::radians(50.0f), glm::vec3(0.5f, 1.0f, 0.0f));
 
-            basicShader.setUniformMat4f("u_Model", model);
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-            cubeMesh.clear();
+            chunk.Render(basicShader, texture);
 
-            basicShader.use();
-            cubeMesh.render();
+            // cubeMesh.clear();
+            //
+            // cubeMesh.render(basicShader);
 
             /* Swap front and back buffers */
             glfwSwapBuffers(window);

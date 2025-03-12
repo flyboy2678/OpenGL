@@ -1,9 +1,14 @@
 #include "Block.h"
+#include <glm/gtc/matrix_transform.hpp>
 
 Block::Block() {}
 
 Block::Block(BlockType type, glm::vec3 postion)
     : m_Type(type), m_Position(postion), m_IsActive(type != BlockType::AIR)
+{
+}
+
+Block::~Block()
 {
 }
 
@@ -26,3 +31,4 @@ bool Block::isActive() const
 {
     return m_IsActive;
 }
+

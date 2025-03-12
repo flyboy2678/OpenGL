@@ -1,10 +1,13 @@
 #include "Mesh.h"
-#include "Renderer.h"
+#include "VertexBufferLayout.h"
+#include "src/Shader.h"
 
-Mesh::Mesh(const std::vector<float> &vertices, const std::vector<unsigned int> &indices)
-    : m_VBO(vertices.data(), vertices.size() * sizeof(float)),
-      m_IBO(indices.data(), indices.size())
+Mesh::Mesh(const std::vector<Vertex> &vertices, const std::vector<unsigned int> &indices)
+    : m_VBO(vertices),
+      m_IBO(indices)
 {
+    m_Vertices = vertices;
+    m_Indices = indices;
     VertexBufferLayout layout;
     layout.Push<GL_FLOAT>(3); // position coords
     // layout.Push<GL_FLOAT>(3); // normals
@@ -31,8 +34,9 @@ void Mesh::unbind() const
     m_IBO.Unbind();
 }
 
-void Mesh::render() const
+void Mesh::render(Shader& shader) const
 {
+    shader.use();
     bind();
     GlCall(glDrawElements(GL_TRIANGLES, m_VertexCount, GL_UNSIGNED_INT, nullptr));
 }
@@ -40,4 +44,12 @@ void Mesh::render() const
 void Mesh::clear() const
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+}
+
+std::vector<Vertex> Mesh::getVertices() const {
+    return m_Vertices;
+}
+
+std::vector<unsigned int> Mesh::getIndices() const {
+    return  m_Indices;
 }
